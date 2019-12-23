@@ -1,6 +1,7 @@
 #include "strutils.hh"
 
 #include <sstream>
+#include <algorithm>
 
 namespace strutils {
 
@@ -64,8 +65,8 @@ std::string replace (const std::string& a_String,
 
 // ============================================================================
 
-std::string lstrip  (const std::string& a_String,
-                     const std::string& a_Chars)
+std::string lstrip (const std::string& a_String,
+                    const std::string& a_Chars)
 {
     auto p = a_String.find_first_not_of(a_Chars);
 
@@ -77,8 +78,8 @@ std::string lstrip  (const std::string& a_String,
     return a_String.substr(p);
 }
 
-std::string rstrip  (const std::string& a_String,
-                     const std::string& a_Chars)
+std::string rstrip (const std::string& a_String,
+                    const std::string& a_Chars)
 {
     auto p = a_String.find_last_not_of(a_Chars);
 
@@ -90,17 +91,17 @@ std::string rstrip  (const std::string& a_String,
     return a_String.substr(0, p+1);
 }
 
-std::string strip   (const std::string& a_String,
-                     const std::string& a_Chars)
+std::string strip (const std::string& a_String,
+                   const std::string& a_Chars)
 {
     return rstrip(lstrip(a_String, a_Chars), a_Chars);
 }
 
 // ============================================================================
 
-std::vector<std::string> split  (const std::string& a_String,
-                                  const std::string& a_Sep,
-                                  size_t a_MaxSplit)
+std::vector<std::string> split (const std::string& a_String,
+                                const std::string& a_Sep,
+                                size_t a_MaxSplit)
 {
     std::vector<std::string> parts;
 
@@ -161,6 +162,67 @@ std::vector<std::string> split  (const std::string& a_String,
     }
 
     return parts;
+}
+
+std::vector<std::string> rsplit (const std::string& a_String,
+                                 const std::string& a_Sep,
+                                 size_t a_MaxSplit)
+{    
+    std::vector<std::string> parts;
+
+    // Reverse strings
+    std::string revString = a_String;
+    std::string revSep    = a_Sep;
+
+    std::reverse(revString.begin(), revString.end());
+    std::reverse(revSep.begin(),    revSep.end());
+
+    // Do the split
+    parts = split(revString, revSep, a_MaxSplit);
+
+    // Reverse parts
+    for (auto& part : parts) {
+        std::reverse(part.begin(), part.end());
+    }
+
+    // Reverse the part order
+    std::reverse(parts.begin(), parts.end());
+    return parts;
+}
+
+std::vector<std::string> splitlines (const std::string& a_String) {
+    std::vector<std::string> lines;
+
+    std::stringstream ss(a_String);
+    std::string line;
+
+    while (std::getline(ss, line, '\n')) {
+        lines.push_back(line);
+    }
+
+    return lines;
+}
+
+// ============================================================================
+
+std::string join (const std::string& a_Sep,
+                  const std::vector<std::string>& a_Parts)
+{
+    std::string joined;
+    size_t N = a_Parts.size();
+
+    for (size_t i=0;;) {
+
+        joined += a_Parts[i];
+
+        if (++i >= N) {
+            break;
+        }
+
+        joined += a_Sep;
+    }
+
+    return joined;
 }
 
 // ============================================================================
