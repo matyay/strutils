@@ -7,7 +7,7 @@ namespace pathutils {
 std::pair<std::string, std::string> split (const std::string& str) {
 
     // Find the last path separator
-    size_t pos = str.find_last_of(separator);
+    size_t pos = str.rfind(separator);
 
     // No path
     if (pos == std::string::npos) {
@@ -18,14 +18,16 @@ std::pair<std::string, std::string> split (const std::string& str) {
     if (pos == 0) {
         return std::make_pair(
             std::string(separator),
-            str.substr(1, str.length() - 1)
+            str.substr(separator.length(), str.length() - separator.length())
         );
     }
 
     // Normal split
     return std::make_pair(
         str.substr(0, pos),
-        str.substr(pos+1, str.length() - (pos+1))
+        str.substr(
+            pos + separator.length(), str.length() - (pos + separator.length())
+        )
     );
 }
 
@@ -51,40 +53,40 @@ std::pair<std::string, std::string> splitext (const std::string& str) {
 std::string join (const std::vector<std::string>& chunks) {
 
     std::string path;
+    bool isFirst = true;
 
     // Join rest of the chunks using the separator. Strip separators from them
-    for (size_t i=0; i<chunks.size(); ++i) {
-        auto&  chunk = chunks[i];
-        size_t len   = chunk.length();
+    for (auto& chunk : chunks) {
+        size_t len = chunk.length();
+
+        // Skip empty
+        if (!len) {
+            continue;
+        }
 
         // Find the first and last separator
-        ssize_t p0 = chunk.find_first_of(separator);
-        ssize_t p1 = chunk.find_last_of(separator);
+        size_t p0 = chunk.find(separator);
+        size_t p1 = chunk.rfind(separator);
 
-        // Set to full span if none found
-        if (p0 == (ssize_t)std::string::npos) p0 = -1;
-        if (p1 == (ssize_t)std::string::npos) p1 = len;
+        // Skip separators only if they are at the string boundaries
+        if (p0 == 0) {
+            p0 = separator.length();
+        } else {
+            p0 = 0;
+        }
 
-        // Handle single separator case
-        if (p0 == p1) {
-            if (p0 == 0) {
-                p1 = len;
-            }
-            else if (p1 == (ssize_t)(len - 1)) {
-                p0 = 0;
-            }
-            else {
-                p0 = -1;
-                p1 = len;
-            }
+        if (p1 != (len - separator.length())) {
+            p1 = len;
         }
 
         // Join the chunk
-        if (i == 0) {
+        if (isFirst) {
             path += chunk.substr(0, p1);
         } else {
-            path += separator + chunk.substr(p0 + 1, p1 - p0 - 1);
+            path += separator + chunk.substr(p0, p1 - p0);
         }
+
+        isFirst = false;
     }
 
     return path;
@@ -93,7 +95,7 @@ std::string join (const std::vector<std::string>& chunks) {
 // ============================================================================
 
 bool isabs (const std::string& str) {
-    return !str.empty() && (str[0] == separator[0]);
+    return !str.empty() && (str.find(separator) == 0);
 }
 
 // ============================================================================
