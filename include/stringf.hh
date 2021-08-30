@@ -6,6 +6,7 @@
 // ============================================================================
 
 /// Returns formatted std::string using sprintf style
-std::string stringf (const std::string a_Format, ...);
+std::string vstringf (const std::string a_Format, va_list a_Args);
+std::string stringf  (const std::string a_Format, ...);
 
 #endif
