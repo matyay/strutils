@@ -208,9 +208,12 @@ std::vector<std::string> splitlines (const std::string& a_String) {
 std::string join (const std::string& a_Sep,
                   const std::vector<std::string>& a_Parts)
 {
-    std::string joined;
     size_t N = a_Parts.size();
+    if (N == 0) {
+        return std::string();
+    }
 
+    std::string joined;
     for (size_t i=0;;) {
 
         joined += a_Parts[i];
