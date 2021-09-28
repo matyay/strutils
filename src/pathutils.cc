@@ -95,6 +95,7 @@ std::string join (const std::vector<std::string>& chunks) {
 // ============================================================================
 
 bool isabs (const std::string& str) {
+    // FIXME: Not os-independent !
     return !str.empty() && (str.find(separator) == 0);
 }
 

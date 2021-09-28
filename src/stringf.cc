@@ -3,9 +3,9 @@
 #include <cstddef>
 #include <cstdarg>
 #include <memory>
+#include <stdexcept>
 
 // ============================================================================
-
 
 std::string vstringf (const std::string a_Format, va_list a_Args) {
 
@@ -26,7 +26,7 @@ std::string vstringf (const std::string a_Format, va_list a_Args) {
 
     // Error
     if (res < 0) {
-        return std::string();
+        throw std::runtime_error("vsnprintf() failed!");
     }
 
     // Convert to std::string

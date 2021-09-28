@@ -6,6 +6,9 @@
 
 namespace strutils {
 
+// Compile-time string hashing. According to:
+// https://stackoverflow.com/questions/2111667/compile-time-string-hashing
+
 // ============================================================================
 
 static constexpr uint32_t crc32Table[256] = {
@@ -53,16 +56,18 @@ static constexpr uint32_t crc32Table[256] = {
     0x54de5729, 0x23d967bf, 0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94,
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
+
 // ============================================================================
 
-template<size_t idx>
+template <size_t idx>
 constexpr uint32_t crc32(const char* str)
 {
-    return (crc32<idx-1>(str) >> 8) ^ crc32Table[(crc32<idx-1>(str) ^ str[idx]) & 0x000000FF];
+    return (crc32<idx-1>(str) >> 8) ^ 
+           crc32Table[(crc32<idx-1>(str) ^ str[idx]) & 0x000000FF];
 }
 
 // This is the stop-recursion function
-template<>
+template <>
 constexpr uint32_t crc32<size_t(-1)>(const char* str)
 {
     return 0xFFFFFFFF;

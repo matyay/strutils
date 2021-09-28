@@ -11,6 +11,8 @@ namespace pathutils {
 
 // ============================================================================
 
+/// Path separator.
+/// FIXME: Make this OS-dependent somehow
 static const std::string separator("/");
 
 // ============================================================================
